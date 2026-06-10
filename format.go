@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-func SerializeLiveObject(value any) any {
+func FormatLiveData(value any) any {
 	if value == nil {
 		return value
 	}
@@ -21,7 +21,7 @@ func SerializeLiveObject(value any) any {
 		if valOf.IsNil() {
 			return nil
 		}
-		return SerializeLiveObject(valOf.Elem().Interface())
+		return FormatLiveData(valOf.Elem().Interface())
 
 	// maps and structs
 	case reflect.Map:
@@ -30,7 +30,7 @@ func SerializeLiveObject(value any) any {
 		}
 		newMap := make(map[string]any)
 		for _, k := range valOf.MapKeys() {
-			newMap[fmt.Sprint(k.Interface())] = SerializeLiveObject(valOf.MapIndex(k).Interface())
+			newMap[fmt.Sprint(k.Interface())] = FormatLiveData(valOf.MapIndex(k).Interface())
 		}
 		return newMap
 	case reflect.Struct:
@@ -49,7 +49,7 @@ func SerializeLiveObject(value any) any {
 			}
 			if field.IsExported() {
 				fieldVal := valOf.Field(i).Interface()
-				formatted := SerializeLiveObject(fieldVal)
+				formatted := FormatLiveData(fieldVal)
 				newMap[jsonName] = formatted
 			}
 		}
@@ -65,7 +65,7 @@ func SerializeLiveObject(value any) any {
 		l := valOf.Len()
 		newSlice := make([]any, valOf.Len())
 		for i := 0; i < l; i++ {
-			newSlice[i] = SerializeLiveObject(valOf.Index(i).Interface())
+			newSlice[i] = FormatLiveData(valOf.Index(i).Interface())
 		}
 		return newSlice
 
